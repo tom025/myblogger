@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+load 'lib/file_handler.rb'
+require 'webrick'
+
+class BlogServlet < WEBrick::HTTPServlet::AbstractServlet
+	def do_GET(request, response)
+			response.status = 200
+			result = nil
+
+			case request.path
+				when '/add'
+					result = FileHandler.add_post
+				when '/index'
+					result = FileHandler.show_posts
+				else
+					result = "<h1>No such page<h1>"
+			end
+
+			response.body = result
+
+		end
+	end
+
+
+server = WEBrick::HTTPServer.new(:Port => 1234)
+server.mount '/', BlogServlet
+trap('INT'){ server.shutdown }
+server.start
